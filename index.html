@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>0 to Shipped Resume Parser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-mark">0</div>
+          <div>
+            <div class="brand-name">to shipped</div>
+            <div class="brand-subtitle">resume parser</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a href="#about">About</a>
+          <a href="#results">Results</a>
+          <a href="#skills">Skills</a>
+        </nav>
+      </header>
+
+      <main class="hero">
+        <section class="hero-copy">
+          <span class="eyebrow">AI-powered resume scoring</span>
+          <h1>Turn a resume into a hiring signal in seconds.</h1>
+          <p>
+            Upload a PDF and get an instant score for the role, a list of matched skills,
+            and the gaps to close before shipping your next application.
+          </p>
+
+          <div class="cta-row">
+            <button class="primary-btn" id="triggerUpload">Upload resume</button>
+            <button class="secondary-btn">View demo</button>
+          </div>
+
+          <ul class="mini-stats">
+            <li><strong>2 min</strong><span>analysis</span></li>
+            <li><strong>87%</strong><span>accuracy</span></li>
+            <li><strong>12+</strong><span>skills tracked</span></li>
+          </ul>
+        </section>
+
+        <section class="upload-panel" aria-label="Resume upload and results panel">
+          <div class="panel-header">
+            <span class="dot green"></span>
+            <span class="dot yellow"></span>
+            <span class="dot red"></span>
+          </div>
+
+          <div class="upload-box" id="uploadBox">
+            <input type="file" id="resumeInput" accept="application/pdf" hidden />
+            <div class="upload-icon">↑</div>
+            <p class="upload-title">Drop your PDF here</p>
+            <p class="upload-subtitle">or click to browse</p>
+          </div>
+
+          <div class="score-block" id="results">
+            <div class="score-topline">
+              <span class="label">Resume score</span>
+              <span class="score-pill" id="scoreBadge">86%</span>
+            </div>
+
+            <div class="score-ring-wrap">
+              <div class="score-ring" data-score="86">
+                <div class="score-inner">
+                  <strong id="scoreNumber">86</strong>
+                  <span>/100</span>
+                </div>
+              </div>
+              <div class="score-meta">
+                <div>
+                  <span class="meta-label">Matched</span>
+                  <strong id="matchedCount">12</strong>
+                </div>
+                <div>
+                  <span class="meta-label">Missing</span>
+                  <strong id="missingCount">4</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <section class="skills-grid" id="skills">
+        <article class="skill-card present">
+          <div class="card-header">
+            <span class="section-tag success">Present</span>
+            <span class="count" id="presentTotal">12</span>
+          </div>
+          <div class="pill-list" id="presentSkills">
+            <span class="pill success">React</span>
+            <span class="pill success">TypeScript</span>
+            <span class="pill success">Node.js</span>
+            <span class="pill success">SQL</span>
+            <span class="pill success">Figma</span>
+            <span class="pill success">Product Thinking</span>
+            <span class="pill success">UX Strategy</span>
+            <span class="pill success">JavaScript</span>
+            <span class="pill success">API Design</span>
+            <span class="pill success">Agile</span>
+            <span class="pill success">Testing</span>
+            <span class="pill success">Communication</span>
+          </div>
+        </article>
+
+        <article class="skill-card missing">
+          <div class="card-header">
+            <span class="section-tag danger">Missing</span>
+            <span class="count" id="missingTotal">4</span>
+          </div>
+          <div class="pill-list" id="missingSkills">
+            <span class="pill danger">Python</span>
+            <span class="pill danger">AWS</span>
+            <span class="pill danger">Leadership</span>
+            <span class="pill danger">CI/CD</span>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
