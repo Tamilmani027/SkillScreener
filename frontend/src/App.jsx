@@ -1,4 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
+import Header from './components/Header';
+import HeroVisual from './components/HeroVisual';
+import FeatureGrid from './components/FeatureGrid';
+import Footer from './components/Footer';
 
 const sampleResumeData = {
   score: 86,
@@ -25,11 +29,14 @@ function truncateFileName(fileName) {
 
 export default function App() {
   const inputRef = useRef(null);
+  const jdRef = useRef(null);
   const [fileLabel, setFileLabel] = useState('Drop your PDF here');
+  const [jdLabel, setJdLabel] = useState('No JD uploaded');
   const [score, setScore] = useState(86);
   const [matchedSkills, setMatchedSkills] = useState(sampleResumeData.matched);
   const [missingSkills, setMissingSkills] = useState(sampleResumeData.missing);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const matchedCount = matchedSkills.length;
   const missingCount = missingSkills.length;
@@ -55,6 +62,16 @@ export default function App() {
     applyResumeData(file);
   }
 
+  function applyJdData(file) {
+    if (!file) return;
+    setJdLabel(truncateFileName(file.name || 'job_description.pdf'));
+  }
+
+  function handleJdChange(event) {
+    const [file] = event.target.files;
+    applyJdData(file);
+  }
+
   function handleDrop(event) {
     event.preventDefault();
     setIsDragging(false);
@@ -65,22 +82,8 @@ export default function App() {
 
   return (
     <div className="page-shell">
-      <header className="topbar">
-        <div className="brand-wrap">
-          <div className="brand-mark">0</div>
-          <div>
-            <div className="brand-name">to shipped</div>
-            <div className="brand-subtitle">resume parser</div>
-          </div>
-        </div>
-
-        <nav className="nav">
-          <a href="#about">About</a>
-          <a href="#results">Results</a>
-          <a href="#skills">Skills</a>
-        </nav>
-      </header>
-
+      
+      <Header/>
       <main className="hero">
         <section className="hero-copy" id="about">
           <span className="eyebrow">AI-powered resume scoring</span>
@@ -115,7 +118,10 @@ export default function App() {
           </ul>
         </section>
 
-        <section className="upload-panel" aria-label="Resume upload and results panel">
+        <div className="visual-column">
+          <HeroVisual />
+
+          <section className="upload-panel" aria-label="Resume upload and results panel">
           <div className="panel-header">
             <span className="dot green" />
             <span className="dot yellow" />
@@ -154,11 +160,62 @@ export default function App() {
               hidden
               onChange={handleFileChange}
             />
-            <div className="upload-icon">↑</div>
+            <input
+              ref={jdRef}
+              type="file"
+              accept="application/pdf"
+              hidden
+              onChange={handleJdChange}
+            />
+            <div className="upload-icon">&#8593;</div>
             <p className="upload-title">{fileLabel}</p>
             <p className="upload-subtitle">
               {fileLabel === 'Drop your PDF here' ? 'or click to browse' : 'Resume parsed successfully'}
             </p>
+            <div style={{ marginTop: 12, display: 'flex', gap: 10, alignItems: 'center' }}>
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => jdRef.current?.click()}
+              >
+                Upload JD
+              </button>
+              <div style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{jdLabel}</div>
+            </div>
+            <div style={{ marginTop: 18, display: 'flex', gap: 12 }}>
+              <button
+                className="primary-btn"
+                onClick={async () => {
+                  const resumeFile = inputRef.current?.files?.[0];
+                  const jdFile = jdRef.current?.files?.[0];
+                  if (!resumeFile) return;
+                  setIsAnalyzing(true);
+                  try {
+                    const fd = new FormData();
+                    fd.append('resume', resumeFile);
+                    if (jdFile) fd.append('jd', jdFile);
+
+                    const resp = await fetch('http://localhost:4000/api/compare', {
+                      method: 'POST',
+                      body: fd
+                    });
+                    const data = await resp.json();
+                    if (data?.result) {
+                      setScore(data.result.score || 0);
+                      setMatchedSkills(data.result.matched || []);
+                      setMissingSkills(data.result.missing || []);
+                    }
+                  } catch (err) {
+                    console.error(err);
+                  } finally {
+                    setIsAnalyzing(false);
+                  }
+                }}
+                disabled={isAnalyzing}
+              >
+                {isAnalyzing ? 'Analyzing…' : 'Analyze'}
+              </button>
+            </div>
           </div>
 
           <div className="score-block" id="results">
@@ -186,8 +243,11 @@ export default function App() {
               </div>
             </div>
           </div>
-        </section>
+          </section>
+        </div>
       </main>
+
+      <FeatureGrid />
 
       <section className="skills-grid" id="skills">
         <article className="skill-card present">
@@ -218,6 +278,9 @@ export default function App() {
           </div>
         </article>
       </section>
+
+      <Footer />
     </div>
   );
 }
+
